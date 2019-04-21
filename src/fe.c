@@ -71,6 +71,7 @@ struct fe_Context {
   fe_Object *freelist;
   fe_Object *symlist;
   fe_Object *t;
+  void *userdata;
   int nextchr;
 };
 
