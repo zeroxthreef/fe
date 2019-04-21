@@ -784,7 +784,7 @@ fe_Object* fe_eval(fe_Context *ctx, fe_Object *obj) {
 }
 
 
-fe_Context* fe_open(void *ptr, int size) {
+fe_Context* fe_open(void *ptr, int size, void *userdata) {
   int i, save;
   fe_Context *ctx;
 
@@ -805,6 +805,9 @@ fe_Context* fe_open(void *ptr, int size) {
   ctx->calllist = &nil;
   ctx->freelist = &nil;
   ctx->symlist = &nil;
+
+  /* add userdata */
+  ctx->userdata = userdata;
 
   /* populate freelist */
   for (i = 0; i < ctx->object_count; i++) {

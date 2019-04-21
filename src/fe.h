@@ -27,7 +27,7 @@ enum {
   FE_TFUNC, FE_TMACRO, FE_TPRIM, FE_TCFUNC, FE_TPTR
 };
 
-fe_Context* fe_open(void *ptr, int size);
+fe_Context* fe_open(void *ptr, int size, void *userdata);
 void fe_close(fe_Context *ctx);
 fe_Handlers* fe_handlers(fe_Context *ctx);
 void fe_error(fe_Context *ctx, const char *msg);
