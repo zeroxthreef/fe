@@ -783,6 +783,11 @@ fe_Object* fe_eval(fe_Context *ctx, fe_Object *obj) {
   return eval(ctx, obj, &nil, NULL);
 }
 
+void *fe_userdata(fe_Context *ctx)
+{
+  return ctx->userdata;
+}
+
 
 fe_Context* fe_open(void *ptr, int size, void *userdata) {
   int i, save;
