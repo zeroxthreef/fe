@@ -43,13 +43,13 @@
 enum {
  P_LET, P_SET, P_IF, P_FN, P_MAC, P_WHILE, P_QUOTE, P_AND, P_OR, P_DO, P_CONS,
  P_CAR, P_CDR, P_SETCAR, P_SETCDR, P_LIST, P_NOT, P_IS, P_ATOM, P_PRINT, P_LT,
- P_LTE, P_ADD, P_SUB, P_MUL, P_DIV, P_MAX
+ P_LTE, P_ADD, P_SUB, P_MUL, P_DIV, P_NTHCDR, P_MAX
 };
 
 static const char *primnames[] = {
   "let", "=", "if", "fn", "mac", "while", "quote", "and", "or", "do", "cons",
   "car", "cdr", "setcar", "setcdr", "list", "not", "is", "atom", "print", "<",
-  "<=", "+", "-", "*", "/"
+  "<=", "+", "-", "*", "/", "nthcdr"
 };
 
 static const char *typenames[] = {
@@ -337,6 +337,15 @@ fe_Object* fe_car(fe_Context *ctx, fe_Object *obj) {
 fe_Object* fe_cdr(fe_Context *ctx, fe_Object *obj) {
   if (isnil(obj)) { return obj; }
   return cdr(checktype(ctx, obj, FE_TPAIR));
+}
+
+fe_Object* fe_nthcdr(fe_Context *ctx, fe_Object *obj, int n) {
+  int i;
+  for(i = 0; i < n; i++) {
+    if (isnil(obj)) { return obj; }
+      obj = cdr(checktype(ctx, obj, FE_TPAIR));
+  }  
+  return obj;
 }
 
 
@@ -702,6 +711,11 @@ static fe_Object* eval(fe_Context *ctx, fe_Object *obj, fe_Object *env, fe_Objec
 
         case P_CDR:
           res = fe_cdr(ctx, evalarg());
+          break;
+        
+        case P_NTHCDR:
+          n = fe_tonumber(ctx, evalarg());
+          res = fe_nthcdr(ctx, evalarg(), n);
           break;
 
         case P_SETCAR:
