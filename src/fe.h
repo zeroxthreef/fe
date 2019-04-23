@@ -49,6 +49,8 @@ fe_Object* fe_list(fe_Context *ctx, fe_Object **objs, int n);
 fe_Object* fe_car(fe_Context *ctx, fe_Object *obj);
 fe_Object* fe_cdr(fe_Context *ctx, fe_Object *obj);
 fe_Object* fe_nthcdr(fe_Context *ctx, fe_Object *obj, int n);
+fe_Object* fe_nth(fe_Context *ctx, fe_Object *obj, int n);
+fe_Object* fe_length(fe_Context *ctx, fe_Object *obj);
 void fe_write(fe_Context *ctx, fe_Object *obj, fe_WriteFn fn, void *udata, int qt);
 void fe_writefp(fe_Context *ctx, fe_Object *obj, FILE *fp);
 int fe_tostring(fe_Context *ctx, fe_Object *obj, char *dst, int size);

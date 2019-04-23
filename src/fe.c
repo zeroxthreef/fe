@@ -43,13 +43,13 @@
 enum {
  P_LET, P_SET, P_IF, P_FN, P_MAC, P_WHILE, P_QUOTE, P_AND, P_OR, P_DO, P_CONS,
  P_CAR, P_CDR, P_SETCAR, P_SETCDR, P_LIST, P_NOT, P_IS, P_ATOM, P_PRINT, P_LT,
- P_LTE, P_ADD, P_SUB, P_MUL, P_DIV, P_NTHCDR, P_MAX
+ P_LTE, P_ADD, P_SUB, P_MUL, P_DIV, P_NTHCDR, P_NTH, P_LENGTH, P_MAX
 };
 
 static const char *primnames[] = {
   "let", "=", "if", "fn", "mac", "while", "quote", "and", "or", "do", "cons",
   "car", "cdr", "setcar", "setcdr", "list", "not", "is", "atom", "print", "<",
-  "<=", "+", "-", "*", "/", "nthcdr"
+  "<=", "+", "-", "*", "/", "nthcdr", "nth", "length"
 };
 
 static const char *typenames[] = {
@@ -339,6 +339,7 @@ fe_Object* fe_cdr(fe_Context *ctx, fe_Object *obj) {
   return cdr(checktype(ctx, obj, FE_TPAIR));
 }
 
+
 fe_Object* fe_nthcdr(fe_Context *ctx, fe_Object *obj, int n) {
   int i;
   for(i = 0; i < n; i++) {
@@ -346,6 +347,24 @@ fe_Object* fe_nthcdr(fe_Context *ctx, fe_Object *obj, int n) {
       obj = cdr(checktype(ctx, obj, FE_TPAIR));
   }  
   return obj;
+}
+
+
+fe_Object* fe_nth(fe_Context *ctx, fe_Object *obj, int n) {
+  if (isnil(obj)) { return obj; }
+  return car(fe_nthcdr(ctx, obj, n));
+}
+
+
+fe_Object* fe_length(fe_Context *ctx, fe_Object *obj) {
+  int i = 0;
+  if (isnil(obj)) { return obj; }
+  while(1) {
+    if (isnil(obj)) { break; }
+      obj = cdr(checktype(ctx, obj, FE_TPAIR));
+      i++;
+  }  
+  return fe_number(ctx, i);
 }
 
 
@@ -716,6 +735,15 @@ static fe_Object* eval(fe_Context *ctx, fe_Object *obj, fe_Object *env, fe_Objec
         case P_NTHCDR:
           n = fe_tonumber(ctx, evalarg());
           res = fe_nthcdr(ctx, evalarg(), n);
+          break;
+
+        case P_NTH:
+          n = fe_tonumber(ctx, evalarg());
+          res = fe_nth(ctx, evalarg(), n);
+          break;
+
+        case P_LENGTH:
+          res = fe_length(ctx, evalarg());
           break;
 
         case P_SETCAR:
