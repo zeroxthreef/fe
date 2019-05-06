@@ -43,13 +43,13 @@
 enum {
  P_LET, P_SET, P_IF, P_FN, P_MAC, P_WHILE, P_QUOTE, P_AND, P_OR, P_DO, P_CONS,
  P_CAR, P_CDR, P_SETCAR, P_SETCDR, P_LIST, P_NOT, P_IS, P_ATOM, P_PRINT, P_LT,
- P_LTE, P_ADD, P_SUB, P_MUL, P_DIV, P_NTHCDR, P_NTH, P_LENGTH, P_MAX
+ P_LTE, P_ADD, P_SUB, P_MUL, P_DIV, P_NTHCDR, P_NTH, P_LENGTH, P_SETNTH, P_MAX
 };
 
 static const char *primnames[] = {
   "let", "=", "if", "fn", "mac", "while", "quote", "and", "or", "do", "cons",
   "car", "cdr", "setcar", "setcdr", "list", "not", "is", "atom", "print", "<",
-  "<=", "+", "-", "*", "/", "nthcdr", "nth", "length"
+  "<=", "+", "-", "*", "/", "nthcdr", "nth", "length", "setnth"
 };
 
 static const char *typenames[] = {
@@ -365,6 +365,23 @@ fe_Object* fe_length(fe_Context *ctx, fe_Object *obj) {
       i++;
   }  
   return fe_number(ctx, i);
+}
+
+
+fe_Object* fe_setnth(fe_Context *ctx, fe_Object *replace, fe_Object *obj, int n) {
+  fe_Object *res = &nil;
+  int i = fe_tonumber(ctx, fe_length(ctx, obj)) - 1;
+
+  if (isnil(obj)) { return obj; }
+  while(i >= 0)
+  {
+    if(i != n)
+      res = fe_cons(ctx, fe_nth(ctx, obj, i), res);
+    else
+      res = fe_cons(ctx, replace, res);
+    i--;
+  }
+  return res;
 }
 
 
@@ -745,7 +762,12 @@ static fe_Object* eval(fe_Context *ctx, fe_Object *obj, fe_Object *env, fe_Objec
         case P_LENGTH:
           res = fe_length(ctx, evalarg());
           break;
-
+        
+        case P_SETNTH: /* (setnth 3 '(45 76 34) 6) */
+          n = fe_tonumber(ctx, evalarg());
+          res = fe_setnth(ctx, evalarg(), evalarg(), n);
+          break;
+        
         case P_SETCAR:
           va = checktype(ctx, evalarg(), FE_TPAIR);
           car(va) = evalarg();
