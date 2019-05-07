@@ -21,6 +21,7 @@
 */
 
 #include <string.h>
+#include <math.h>
 #include "fe.h"
 
 #define unused(x)     ( (void) (x) )
@@ -43,13 +44,13 @@
 enum {
  P_LET, P_SET, P_IF, P_FN, P_MAC, P_WHILE, P_QUOTE, P_AND, P_OR, P_DO, P_CONS,
  P_CAR, P_CDR, P_SETCAR, P_SETCDR, P_LIST, P_NOT, P_IS, P_ATOM, P_PRINT, P_LT,
- P_LTE, P_ADD, P_SUB, P_MUL, P_DIV, P_NTHCDR, P_NTH, P_LENGTH, P_SETNTH, P_MAX
+ P_LTE, P_ADD, P_SUB, P_MUL, P_DIV, P_MOD, P_NTHCDR, P_NTH, P_LENGTH, P_SETNTH, P_MAX
 };
 
 static const char *primnames[] = {
   "let", "=", "if", "fn", "mac", "while", "quote", "and", "or", "do", "cons",
   "car", "cdr", "setcar", "setcdr", "list", "not", "is", "atom", "print", "<",
-  "<=", "+", "-", "*", "/", "nthcdr", "nth", "length", "setnth"
+  "<=", "+", "-", "*", "/", "%", "nthcdr", "nth", "length", "setnth"
 };
 
 static const char *typenames[] = {
@@ -661,6 +662,7 @@ static fe_Object* eval(fe_Context *ctx, fe_Object *obj, fe_Object *env, fe_Objec
   fe_Object *fn, *arg, *res;
   fe_Object cl, *va, *vb;
   int n, gc;
+  float nf;
 
   switch (type(obj)) {
     case FE_TSYMBOL: return cdr(getbound(obj, env));
@@ -801,6 +803,11 @@ static fe_Object* eval(fe_Context *ctx, fe_Object *obj, fe_Object *env, fe_Objec
             if (!isnil(arg)) { printf(" "); }
           }
           printf("\n");
+          break;
+        
+        case P_MOD:
+          nf = fe_tonumber(ctx,evalarg());
+          res = fe_number(ctx, fmod(nf, fe_tonumber(ctx,evalarg())));
           break;
 
         case P_LT: numcmpop(<); break;
